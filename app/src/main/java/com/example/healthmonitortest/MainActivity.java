@@ -1,12 +1,17 @@
 package com.example.healthmonitortest;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
+
+import java.util.Date;
+import java.util.Random;
 
 import io.realm.OrderedCollectionChangeSet;
 import io.realm.OrderedRealmCollectionChangeListener;
@@ -40,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.v("QUICKSTART", "Successfully authenticated anonymously.");
                 user = app.currentUser();
 
-                String partitionValue = "public";
+                String partitionValue = "private";
 
                 SyncConfiguration config = new SyncConfiguration.Builder(
                         user,partitionValue)
@@ -117,14 +122,31 @@ public class MainActivity extends AppCompatActivity {
         }
     }*/
 
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public void buttonGenerate(View view) {
+        Random random = new Random();
 
-
+        for (int i = 0; i < 10; i++) {
+            ActivityData activityData = new ActivityData(random.doubles(2.5,100.0).findFirst().getAsDouble(),
+                    random.doubles(5.00,160.00).findFirst().getAsDouble(),
+                    random.ints(100,1300).findFirst().getAsInt(),
+                    new Date().getTime(),random.ints(100,10000).findFirst().getAsInt(),
+                    random.ints(60,120).findFirst().getAsInt(),
+                    random.ints(40,80).findFirst().getAsInt(),
+                    random.ints(90,150).findFirst().getAsInt(),
+                    random.ints(50,80).findFirst().getAsInt(),
+                    random.ints(21,62).findFirst().getAsInt(),
+                    random.ints(10,30).findFirst().getAsInt(),
+                    random.doubles(-5.00,40.00).findFirst().getAsDouble(),
+                    new Date().getTime());
+            uiThreadRealm.executeTransaction (transactionRealm -> {
+                transactionRealm.insert(activityData);
+            });
+        }
 
         AppUser appUser = new AppUser("user3","password","user3@mail.com",919918917);
-        uiThreadRealm.executeTransaction (transactionRealm -> {
-            transactionRealm.insert(appUser);
-        });
+
         Toast.makeText(this, "Dados foram gerados", Toast.LENGTH_SHORT).show();
     }
 }
