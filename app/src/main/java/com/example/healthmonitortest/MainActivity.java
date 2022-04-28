@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
                     random.ints(50,80).findFirst().getAsInt(),
                     random.ints(21,62).findFirst().getAsInt(),
                     random.ints(10,30).findFirst().getAsInt(),
-                    random.doubles(-5.00,40.00).findFirst().getAsDouble(),
+                    random.doubles(0.00,40.00).findFirst().getAsDouble(),
                     new Date().getTime());
             uiThreadRealm.executeTransaction (transactionRealm -> {
                 transactionRealm.insert(activityData);
