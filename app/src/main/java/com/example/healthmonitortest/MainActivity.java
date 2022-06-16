@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Random;
 
 import io.realm.OrderedCollectionChangeSet;
@@ -39,10 +40,10 @@ public class MainActivity extends AppCompatActivity {
         String appID = "healthmonitorapp-pfisi";
         app = new App(new AppConfiguration.Builder(appID)
                 .build());
-        Credentials credentials = Credentials.anonymous();
+        Credentials credentials = Credentials.emailPassword("teste6@mail.com","password");
         app.loginAsync(credentials, result -> {
             if (result.isSuccess()) {
-                Log.v("QUICKSTART", "Successfully authenticated anonymously.");
+                Log.v("QUICKSTART", "Login Successful.");
                 user = app.currentUser();
 
                 String partitionValue = "private";
@@ -54,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
                         .build();
 
                 uiThreadRealm = Realm.getInstance(config);
-
+                addChangeListenerToRealm(uiThreadRealm);
                 // interact with realm using your user object here
             } else {
                 Log.e("QUICKSTART", "Failed to log in. Error: " + result.getError());
@@ -63,8 +64,6 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
-        //addChangeListenerToRealm(uiThreadRealm);
 
     }
 
@@ -82,12 +81,13 @@ public class MainActivity extends AppCompatActivity {
         });
         uiThreadRealm.close();
     }
-    /*private void addChangeListenerToRealm(Realm realm) {
+
+    private void addChangeListenerToRealm(Realm realm) {
         // all Tasks in the realm
-        RealmResults<AppUser> AppUsers = uiThreadRealm.where(AppUser.class).findAllAsync();
-        AppUsers.addChangeListener(new OrderedRealmCollectionChangeListener<RealmResults<AppUser>>() {
+        RealmResults<ActivityData> activityDatas = uiThreadRealm.where(ActivityData.class).findAllAsync();
+        activityDatas.addChangeListener(new OrderedRealmCollectionChangeListener<RealmResults<ActivityData>>() {
             @Override
-            public void onChange(RealmResults<User> collection, OrderedCollectionChangeSet changeSet) {
+            public void onChange(RealmResults<ActivityData> collection, OrderedCollectionChangeSet changeSet) {
                 // process deletions in reverse order if maintaining parallel data structures so indices don't change as you iterate
                 OrderedCollectionChangeSet.Range[] deletions = changeSet.getDeletionRanges();
                 for (OrderedCollectionChangeSet.Range range : deletions) {
@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.v("QUICKSTART", "Updated range: " + range.startIndex + " to " + (range.startIndex + range.length - 1));                            }
             }
         });
-    }*/
+    }
 
    /* public class BackgroundQuickStart implements Runnable {
         @Override
@@ -126,27 +126,44 @@ public class MainActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void buttonGenerate(View view) {
         Random random = new Random();
+        int minHeartrate = random.ints(50,120).findFirst().getAsInt();
+        int maxHeartrate = random.ints(minHeartrate+15,170).findFirst().getAsInt();
+        int restHeartrate = random.ints(minHeartrate+5,((maxHeartrate+minHeartrate)/2)-5).findFirst().getAsInt();
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 100; i++) {
             ActivityData activityData = new ActivityData(random.doubles(2.5,100.0).findFirst().getAsDouble(),
                     random.doubles(5.00,160.00).findFirst().getAsDouble(),
                     random.ints(100,1300).findFirst().getAsInt(),
-                    new Date().getTime(),random.ints(100,10000).findFirst().getAsInt(),
-                    random.ints(60,120).findFirst().getAsInt(),
-                    random.ints(40,80).findFirst().getAsInt(),
-                    random.ints(90,150).findFirst().getAsInt(),
-                    random.ints(50,80).findFirst().getAsInt(),
+                    new GregorianCalendar(2022,random.ints(1,12).findFirst().getAsInt(),random.ints(1,31).findFirst().getAsInt()).getTime(),
+                    random.ints(100,10000).findFirst().getAsInt(),
+                    minHeartrate,
+                    maxHeartrate,
+                    restHeartrate,
                     random.ints(21,62).findFirst().getAsInt(),
-                    random.ints(10,30).findFirst().getAsInt(),
-                    random.doubles(0.00,40.00).findFirst().getAsDouble(),
-                    new Date().getTime());
+                    random.ints(10,30).findFirst().getAsInt());
             uiThreadRealm.executeTransaction (transactionRealm -> {
                 transactionRealm.insert(activityData);
             });
         }
 
-        AppUser appUser = new AppUser("user3","password","user3@mail.com",919918917);
+
 
         Toast.makeText(this, "Dados foram gerados", Toast.LENGTH_SHORT).show();
+
+        /*AppUser appUser = new AppUser("user8","password","teste8@mail.com",919918918,false);
+        uiThreadRealm.executeTransaction(transactionRealm ->{
+            transactionRealm.insert(appUser);
+        });
+        app.getEmailPassword().registerUserAsync("teste8@mail.com","password",result -> {
+            //Log.v("Result",result.getError().getErrorMessage());
+            if (result.isSuccess()){
+                Log.v("User","Registered with email successfully");
+            }else {
+                Log.v("User","Registration failed");
+            }
+        });*/
+
+
+
     }
 }

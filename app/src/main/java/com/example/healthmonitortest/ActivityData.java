@@ -13,13 +13,16 @@ public class ActivityData extends RealmObject {
     @PrimaryKey
     private ObjectId _id = new ObjectId();
 
+    @Required
+    private String type;
+
     private double distanceKm;
 
     private double duration;
 
     private int calories;
 
-    private long endDate;
+    private Date finishDate;
 
     private int steps;
 
@@ -35,29 +38,25 @@ public class ActivityData extends RealmObject {
 
     private int respiratoryRate;
 
-    private double temperatureCelsius;
-
-    private long date;
 
     public ActivityData() {
     }
 
-    public ActivityData(double distanceKm, double duration, int calories, long endDate, int steps,
-                        int avgHeartrate, int minHeartrate, int maxHeartrate, int restingHeartrate,
-                        int vo2Max, int respiratoryRate, double temperatureCelsius, long date) {
+    public ActivityData(double distanceKm, double duration, int calories, Date endDate, int steps,
+                        int minHeartrate, int maxHeartrate, int restingHeartrate,
+                        int vo2Max, int respiratoryRate) {
         this.distanceKm = distanceKm;
         this.duration = duration;
         this.calories = calories;
-        this.endDate = endDate;
+        this.finishDate = endDate;
         this.steps = steps;
-        this.avgHeartrate = avgHeartrate;
+        this.avgHeartrate = (maxHeartrate+minHeartrate)/2;
         this.minHeartrate = minHeartrate;
         this.maxHeartrate = maxHeartrate;
         this.restingHeartrate = restingHeartrate;
         this.vo2Max = vo2Max;
         this.respiratoryRate = respiratoryRate;
-        this.temperatureCelsius = temperatureCelsius;
-        this.date = date;
+
     }
 
     public double getDistanceKm() {
@@ -84,12 +83,12 @@ public class ActivityData extends RealmObject {
         this.calories = calories;
     }
 
-    public long getEndDate() {
-        return endDate;
+    public Date getFinishDate() {
+        return finishDate;
     }
 
-    public void setEndDate(long endDate) {
-        this.endDate = endDate;
+    public void setFinishDate(Date finishDate) {
+        this.finishDate = finishDate;
     }
 
     public int getSteps() {
@@ -148,19 +147,11 @@ public class ActivityData extends RealmObject {
         this.respiratoryRate = respiratoryRate;
     }
 
-    public double getTemperatureCelsius() {
-        return temperatureCelsius;
+    public String getType() {
+        return type;
     }
 
-    public void setTemperatureCelsius(double temperatureCelsius) {
-        this.temperatureCelsius = temperatureCelsius;
-    }
-
-    public long getDate() {
-        return date;
-    }
-
-    public void setDate(long date) {
-        this.date = date;
+    public void setType(String type) {
+        this.type = type;
     }
 }
